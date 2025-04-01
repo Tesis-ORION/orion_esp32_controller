@@ -1,18 +1,14 @@
 #include <Arduino.h>
+#include "MicroROS.h"
 
-// put function declarations here:
-int myFunction(int, int);
+MicroROS micro_ros_node;
 
 void setup() {
-  // put your setup code here, to run once:
-  int result = myFunction(2, 3);
+    micro_ros_node.initialize();
+
+    micro_ros_node.executors_start();
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
-}
-
-// put function definitions here:
-int myFunction(int x, int y) {
-  return x + y;
+    micro_ros_node.start_receiving_msgs();
 }
