@@ -18,8 +18,8 @@ void MicroROS::initialize(){
     char ssid[] = "SSID";  // Cambia esto por el nombre de tu red wifi
     char psk[] = "Password";    // Cambia esto por tu contraseña wifi
 
-    //set_microros_wifi_transports(ssid, psk, agent_ip, agent_port);
-    set_microros_serial_transports(Serial);  // Descomenta esta línea si prefieres usar puerto serial
+    set_microros_wifi_transports(ssid, psk, agent_ip, agent_port);
+    //set_microros_serial_transports(Serial);  // Descomenta esta línea si prefieres usar puerto serial
 
     delay(2000);
 
