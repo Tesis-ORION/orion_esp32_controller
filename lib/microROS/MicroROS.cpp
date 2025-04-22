@@ -1,90 +1,74 @@
 #include "MicroROS.h"
-#include <nav_msgs/msg/odometry.h>
 
-rcl_publisher_t odom_pub;
-nav_msgs__msg__Odometry odom_msg;
+rcl_subscription_t servo_status_sub;
+std_msgs__msg__Int32 angle;
+
+rclc_executor_t executor;
+rclc_support_t support;
+rcl_allocator_t allocator;
+rcl_node_t node;
+
+Servomotor myservomotor;
+
 
 MicroROS::MicroROS(){
 }
 
 void MicroROS::initialize(){
     Serial.begin(115200);
-    Serial.println("ROS Odom node started");
+    Serial.println("Servomotor Led node started");
+    myservomotor.initialize();
 
-    // Configuración de Wifi
-    IPAddress agent_ip(192, 168, 0, 12); // Cambia esta IP a la IP de tu computadora
-    size_t agent_port = 8888; // Puerto para la comunicación
+    // Adding Wifi
+    IPAddress agent_ip(192, 168, 238, 218); // change this line to your computer IP
+    size_t agent_port = 8888; // Don't change this port unless you know what you are doing and you have 8888 port already in use
 
-    char ssid[] = "SSID";  // Cambia esto por el nombre de tu red wifi
-    char psk[] = "Password";    // Cambia esto por tu contraseña wifi
+    char ssid[] = "Miguel"; // change this line with your wifi name
+    char psk[]= "Ruta2005*"; // change this line with your password
 
     set_microros_wifi_transports(ssid, psk, agent_ip, agent_port);
-    //set_microros_serial_transports(Serial);  // Descomenta esta línea si prefieres usar puerto serial
+    //set_microros_serial_transports(Serial);  // uncomment this line if you want to use serial instead of wifi
 
     delay(2000);
 
     allocator = rcl_get_default_allocator();
     rclc_support_init(&support, 0, NULL, &allocator);
-    rclc_node_init_default(&node, "odom_publisher_node", "", &support);
+    rclc_node_init_default(&node, "servo_status_sub", "", &support);
 }
+
 
 void MicroROS::executors_start(){
-    rclc_executor_init(&executor, &support.context, 1, &allocator);
+  rclc_executor_init(&executor, &support.context, 1, &allocator);
+  rclc_executor_add_subscription(&executor, &servo_status_sub, &angle,&MicroROS::servo_status_callback, ON_NEW_DATA);
 
-    Serial.println("Executors Started");
-
-    // Publicador para el mensaje de odometría
-    rclc_publisher_init_default(
-        &odom_pub,
-        &node,
-        ROSIDL_GET_MSG_TYPE_SUPPORT(nav_msgs, msg, Odometry),
-        "/odom"
-    );
+  Serial.println("Executors Started");
 }
 
-void MicroROS::publish_odometry(){
-    // Simulación de valores de odometría
-    static float x = 0.0, y = 0.0, z = 0.0;
-    static float vx = 0.1, vy = 0.0, vz = 0.0;  // Velocidad en el espacio
-    static float roll = 0.0, pitch = 0.0, yaw = 0.0;
+void MicroROS::subscriber_define(){
 
-    // Llenar el mensaje de odometría
-    odom_msg.header.stamp.sec = 0;
-    odom_msg.header.stamp.nanosec = 0;
-    odom_msg.pose.pose.position.x = x;
-    odom_msg.pose.pose.position.y = y;
-    odom_msg.pose.pose.position.z = z;
-    odom_msg.pose.pose.orientation.x = roll;
-    odom_msg.pose.pose.orientation.y = pitch;
-    odom_msg.pose.pose.orientation.z = yaw;
-    odom_msg.pose.pose.orientation.w = 1.0;
-    
-    odom_msg.twist.twist.linear.x = vx;
-    odom_msg.twist.twist.linear.y = vy;
-    odom_msg.twist.twist.linear.z = vz;
-    
-    // Publicar el mensaje de odometría
-    rcl_publish(&odom_pub, &odom_msg, NULL);
+    rclc_subscription_init_default(
+    &servo_status_sub,
+    &node,
+    ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Int32),
+    "/servo_angle");
 
-    // Actualizar la posición (simulando movimiento)
-    x += vx * 0.1;  // Actualización por tiempo
-    y += vy * 0.1;
-    z += vz * 0.1;
-    yaw += 0.05;  // Cambio en la orientación (yaw)
+}
 
-    // Imprimir valores de odometría para monitoreo
-    Serial.print("Posición (X, Y, Z): ");
-    Serial.print(x); Serial.print(", ");
-    Serial.print(y); Serial.print(", ");
-    Serial.println(z);
-    Serial.print("Velocidad (VX, VY, VZ): ");
-    Serial.print(vx); Serial.print(", ");
-    Serial.print(vy); Serial.print(", ");
-    Serial.println(vz);
+void MicroROS::servo_status_callback(const void *msg_recv){
+    const std_msgs__msg__Int32 * recieved_data = (const std_msgs__msg__Int32 *) msg_recv ;
+    int status_received = recieved_data->data;
+
+    Serial.println(status_received);
+
+    if(status_received >= 0 && status_received <= 180) {
+        myservomotor.position(status_received);
+    }
+    else{
+        Serial.println("Not valid angle");
+    }
 }
 
 void MicroROS::start_receiving_msgs(){
-    rclc_executor_spin_some(&executor, RCL_MS_TO_NS(100));
-    delay(100);
-    publish_odometry();
+      rclc_executor_spin_some(&executor, RCL_MS_TO_NS(100));
+        delay(100);
 }

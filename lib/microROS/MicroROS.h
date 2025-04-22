@@ -5,20 +5,18 @@
 #include <micro_ros_platformio.h>
 #include <rclc/rclc.h>
 #include <rclc/executor.h>
-#include <nav_msgs/msg/odometry.h>
+#include <std_msgs/msg/int32.h>
+
+#include "servomotor.h"
 
 class MicroROS {
 public:
     MicroROS();
     void initialize();
-    void executors_start();
-    void publish_odometry();
+    void subscriber_define();
+    static void servo_status_callback(const void *msg_recv);
     void start_receiving_msgs();
-
-    rclc_executor_t executor;
-    rclc_support_t support;
-    rcl_allocator_t allocator;
-    rcl_node_t node;
+    void executors_start();
 
 private:
 };
