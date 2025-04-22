@@ -8,13 +8,16 @@
 #include <std_msgs/msg/int32.h>
 
 #include "servomotor.h"
+#include "touchsensor.h"
 
 class MicroROS {
 public:
     MicroROS();
     void initialize();
-    void subscriber_define();
+    void servo_subscriber_define();
+    void touch_publisher_define();
     static void servo_status_callback(const void *msg_recv);
+    void publish_touch();
     void start_receiving_msgs();
     void executors_start();
 

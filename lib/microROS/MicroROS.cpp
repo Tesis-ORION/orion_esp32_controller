@@ -3,12 +3,16 @@
 rcl_subscription_t servo_status_sub;
 std_msgs__msg__Int32 angle;
 
+rcl_publisher_t touch_pub;
+std_msgs__msg__Int32 touch_status;
+
 rclc_executor_t executor;
 rclc_support_t support;
 rcl_allocator_t allocator;
 rcl_node_t node;
 
 Servomotor myservomotor;
+Touchsensor mysensor;
 
 
 MicroROS::MicroROS(){
@@ -18,9 +22,10 @@ void MicroROS::initialize(){
     Serial.begin(115200);
     Serial.println("Servomotor Led node started");
     myservomotor.initialize();
+    mysensor.initialize();
 
     // Adding Wifi
-    IPAddress agent_ip(192, 168, 238, 218); // change this line to your computer IP
+    IPAddress agent_ip(192, 168, 238, 198); // change this line to your computer IP
     size_t agent_port = 8888; // Don't change this port unless you know what you are doing and you have 8888 port already in use
 
     char ssid[] = "Miguel"; // change this line with your wifi name
@@ -44,7 +49,7 @@ void MicroROS::executors_start(){
   Serial.println("Executors Started");
 }
 
-void MicroROS::subscriber_define(){
+void MicroROS::servo_subscriber_define(){
 
     rclc_subscription_init_default(
     &servo_status_sub,
@@ -52,6 +57,15 @@ void MicroROS::subscriber_define(){
     ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Int32),
     "/servo_angle");
 
+}
+
+void MicroROS::touch_publisher_define() {
+    rclc_publisher_init_default(
+        &touch_pub,
+        &node,
+        ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Int32),
+        "/touchsensor_status"
+    );
 }
 
 void MicroROS::servo_status_callback(const void *msg_recv){
@@ -68,7 +82,12 @@ void MicroROS::servo_status_callback(const void *msg_recv){
     }
 }
 
+void MicroROS::publish_touch() {
+    touch_status.data = mysensor.read();
+    rcl_publish(&touch_pub, &touch_status, NULL);
+}
+
 void MicroROS::start_receiving_msgs(){
-      rclc_executor_spin_some(&executor, RCL_MS_TO_NS(100));
-        delay(100);
+    rclc_executor_spin_some(&executor, RCL_MS_TO_NS(100));
+    delay(100);
 }
