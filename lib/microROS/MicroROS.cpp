@@ -3,6 +3,9 @@
 rcl_subscription_t servo_status_sub;
 std_msgs__msg__Int32 angle;
 
+rcl_subscription_t screen_status_sub;
+std_msgs__msg__String faces;
+
 rcl_publisher_t touch_pub;
 std_msgs__msg__Int32 touch_status;
 
@@ -13,6 +16,7 @@ rcl_node_t node;
 
 Servomotor myservomotor;
 Touchsensor mysensor;
+Screen myscreen;
 
 
 MicroROS::MicroROS(){
@@ -23,9 +27,10 @@ void MicroROS::initialize(){
     Serial.println("Servomotor Led node started");
     myservomotor.initialize();
     mysensor.initialize();
+    myscreen.initialize();
 
     // Adding Wifi
-    IPAddress agent_ip(192, 168, 238, 198); // change this line to your computer IP
+    IPAddress agent_ip(192, 168, 238, 218); // change this line to your computer IP
     size_t agent_port = 8888; // Don't change this port unless you know what you are doing and you have 8888 port already in use
 
     char ssid[] = "Miguel"; // change this line with your wifi name
@@ -44,7 +49,8 @@ void MicroROS::initialize(){
 
 void MicroROS::executors_start(){
   rclc_executor_init(&executor, &support.context, 1, &allocator);
-  rclc_executor_add_subscription(&executor, &servo_status_sub, &angle,&MicroROS::servo_status_callback, ON_NEW_DATA);
+  //rclc_executor_add_subscription(&executor, &servo_status_sub, &angle,&MicroROS::servo_status_callback, ON_NEW_DATA);
+  rclc_executor_add_subscription(&executor, &screen_status_sub, &faces,&MicroROS::screen_status_callback, ON_NEW_DATA);
 
   Serial.println("Executors Started");
 }
@@ -56,6 +62,18 @@ void MicroROS::servo_subscriber_define(){
     &node,
     ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Int32),
     "/servo_angle");
+
+}
+
+void MicroROS::screen_subscriber_define(){
+
+    rclc_subscription_init_default(
+    &screen_status_sub,
+    &node,
+    ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, String),
+    "/emotion");
+
+    Serial.println("Subscriptor a /emotion definido");
 
 }
 
@@ -82,6 +100,27 @@ void MicroROS::servo_status_callback(const void *msg_recv){
     }
 }
 
+void MicroROS::screen_status_callback(const void *msg_recv){
+    const std_msgs__msg__String *recieved_data = (const std_msgs__msg__String *) msg_recv;
+    String emotion_received = String(recieved_data->data.data);
+
+    myscreen.drawHappyFace(80, 100);
+    Serial.println(emotion_received);
+
+    if(emotion_received == "happy") {
+        myscreen.drawHappyFace(80, 100);
+    }
+    else if(emotion_received == "neutral"){
+        myscreen.drawNeutralFace(80, 100);
+    }
+    else if(emotion_received == "sad"){
+        myscreen.drawSadFace(80, 100);
+    }
+    else if(emotion_received == "angry"){
+        myscreen.drawAngryFace(10, 100);
+    }
+}
+
 void MicroROS::publish_touch() {
     touch_status.data = mysensor.read();
     rcl_publish(&touch_pub, &touch_status, NULL);
@@ -89,5 +128,6 @@ void MicroROS::publish_touch() {
 
 void MicroROS::start_receiving_msgs(){
     rclc_executor_spin_some(&executor, RCL_MS_TO_NS(100));
+    Serial.println("Spinning...");
     delay(100);
 }

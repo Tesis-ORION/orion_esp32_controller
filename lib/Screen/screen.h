@@ -20,9 +20,15 @@ class Screen{
     public:
         Screen();
         void initialize();
-        void display();
+        void drawFaceBase(int x, int y, uint16_t faceColor);
+        void drawHappyFace(int x, int y);
+        void drawSadFace(int x, int y);
+        void drawAngryFace(int x, int y);
+        void drawNeutralFace(int x, int y);
         void drawBitmap(int x, int y, const unsigned char *bitmap, int w, int h, uint16_t color);
 
+    private:
+        float scale = 2.0;
 };
 
 
