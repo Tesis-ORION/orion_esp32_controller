@@ -4,7 +4,7 @@ rcl_subscription_t servo_status_sub;
 std_msgs__msg__Int32 angle;
 
 rcl_subscription_t screen_status_sub;
-std_msgs__msg__String faces;
+std_msgs__msg__Int32 faces;
 
 rcl_publisher_t touch_pub;
 std_msgs__msg__Int32 touch_status;
@@ -30,7 +30,7 @@ void MicroROS::initialize(){
     myscreen.initialize();
 
     // Adding Wifi
-    IPAddress agent_ip(192, 168, 238, 218); // change this line to your computer IP
+    IPAddress agent_ip(192, 168, 238, 198); // change this line to your computer IP
     size_t agent_port = 8888; // Don't change this port unless you know what you are doing and you have 8888 port already in use
 
     char ssid[] = "Miguel"; // change this line with your wifi name
@@ -70,7 +70,7 @@ void MicroROS::screen_subscriber_define(){
     rclc_subscription_init_default(
     &screen_status_sub,
     &node,
-    ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, String),
+    ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Int32),
     "/emotion");
 
     Serial.println("Subscriptor a /emotion definido");
@@ -101,22 +101,22 @@ void MicroROS::servo_status_callback(const void *msg_recv){
 }
 
 void MicroROS::screen_status_callback(const void *msg_recv){
-    const std_msgs__msg__String *recieved_data = (const std_msgs__msg__String *) msg_recv;
-    String emotion_received = String(recieved_data->data.data);
+    const std_msgs__msg__Int32 * recieved_data = (const std_msgs__msg__Int32 *) msg_recv ;
+    int emotion_received = recieved_data->data;
 
     myscreen.drawHappyFace(80, 100);
     Serial.println(emotion_received);
 
-    if(emotion_received == "happy") {
+    if(emotion_received == 0) {
         myscreen.drawHappyFace(80, 100);
     }
-    else if(emotion_received == "neutral"){
+    else if(emotion_received == 1){
         myscreen.drawNeutralFace(80, 100);
     }
-    else if(emotion_received == "sad"){
+    else if(emotion_received == 2){
         myscreen.drawSadFace(80, 100);
     }
-    else if(emotion_received == "angry"){
+    else if(emotion_received == 3){
         myscreen.drawAngryFace(10, 100);
     }
 }
@@ -128,6 +128,5 @@ void MicroROS::publish_touch() {
 
 void MicroROS::start_receiving_msgs(){
     rclc_executor_spin_some(&executor, RCL_MS_TO_NS(100));
-    Serial.println("Spinning...");
     delay(100);
 }
