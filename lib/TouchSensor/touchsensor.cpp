@@ -2,7 +2,8 @@
 
 Touchsensor::Touchsensor(){};
 
-void Touchsensor::initialize(){
+void Touchsensor::initialize(int pin){
+    touch_pin = pin;
     pinMode(touch_pin, INPUT);
 }
 
@@ -15,4 +16,8 @@ int Touchsensor::read()
     else{
         return 0;
     }
+}
+
+void Touchsensor::setTouchPin(int pin){
+    touch_pin = pin;
 }

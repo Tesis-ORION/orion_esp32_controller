@@ -3,14 +3,15 @@
 
 #include <Arduino.h>
 
-#define touch_pin 15
-
 class Touchsensor{
     public:
         Touchsensor();
-        void initialize();
+        void initialize(int pin);
         int read();
+        void setTouchPin(int pin);
 
+    private:
+        int touch_pin = 2;
 };
 
 

@@ -18,7 +18,10 @@ public:
     void initialize();
     void servo_subscriber_define();
     void screen_subscriber_define();
-    void touch_publisher_define();
+    void touch_publisher_define1();
+    void touch_publisher_define2();
+    void touch_publisher_define3();
+    void touch_publisher_define4();
     static void servo_status_callback(const void *msg_recv);
     static void screen_status_callback(const void *msg_recv);
     void publish_touch();

@@ -6,16 +6,28 @@ std_msgs__msg__Int32 angle;
 rcl_subscription_t screen_status_sub;
 std_msgs__msg__Int32 faces;
 
-rcl_publisher_t touch_pub;
-std_msgs__msg__Int32 touch_status;
+rcl_publisher_t touch_pub1;
+std_msgs__msg__Int32 touch_status1;
+
+rcl_publisher_t touch_pub2;
+std_msgs__msg__Int32 touch_status2;
+
+rcl_publisher_t touch_pub3;
+std_msgs__msg__Int32 touch_status3;
+
+rcl_publisher_t touch_pub4;
+std_msgs__msg__Int32 touch_status4;
 
 rclc_executor_t executor;
 rclc_support_t support;
 rcl_allocator_t allocator;
 rcl_node_t node;
 
-Servomotor myservomotor;
-Touchsensor mysensor;
+//Servomotor myservomotor;
+Touchsensor mysensor1;
+Touchsensor mysensor2;
+Touchsensor mysensor3;
+Touchsensor mysensor4;
 Screen myscreen;
 
 
@@ -25,8 +37,11 @@ MicroROS::MicroROS(){
 void MicroROS::initialize(){
     Serial.begin(115200);
     Serial.println("Servomotor Led node started");
-    myservomotor.initialize();
-    mysensor.initialize();
+    //myservomotor.initialize();
+    mysensor1.initialize(2);
+    mysensor2.initialize(4);
+    mysensor3.initialize(5);
+    mysensor4.initialize(18);
     myscreen.initialize();
 
     // Adding Wifi
@@ -48,7 +63,7 @@ void MicroROS::initialize(){
 
 
 void MicroROS::executors_start(){
-  rclc_executor_init(&executor, &support.context, 1, &allocator);
+  rclc_executor_init(&executor, &support.context, 5, &allocator);
   //rclc_executor_add_subscription(&executor, &servo_status_sub, &angle,&MicroROS::servo_status_callback, ON_NEW_DATA);
   rclc_executor_add_subscription(&executor, &screen_status_sub, &faces,&MicroROS::screen_status_callback, ON_NEW_DATA);
 
@@ -77,12 +92,39 @@ void MicroROS::screen_subscriber_define(){
 
 }
 
-void MicroROS::touch_publisher_define() {
+void MicroROS::touch_publisher_define1() {
     rclc_publisher_init_default(
-        &touch_pub,
+        &touch_pub1,
         &node,
         ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Int32),
-        "/touchsensor_status"
+        "/touchsensor1_status"
+    );
+}
+
+void MicroROS::touch_publisher_define2() {
+    rclc_publisher_init_default(
+        &touch_pub2,
+        &node,
+        ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Int32),
+        "/touchsensor2_status"
+    );
+}
+
+void MicroROS::touch_publisher_define3() {
+    rclc_publisher_init_default(
+        &touch_pub3,
+        &node,
+        ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Int32),
+        "/touchsensor3_status"
+    );
+}
+
+void MicroROS::touch_publisher_define4() {
+    rclc_publisher_init_default(
+        &touch_pub4,
+        &node,
+        ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Int32),
+        "/touchsensor4_status"
     );
 }
 
@@ -93,7 +135,7 @@ void MicroROS::servo_status_callback(const void *msg_recv){
     Serial.println(status_received);
 
     if(status_received >= 0 && status_received <= 180) {
-        myservomotor.position(status_received);
+        //myservomotor.position(status_received);
     }
     else{
         Serial.println("Not valid angle");
@@ -122,8 +164,17 @@ void MicroROS::screen_status_callback(const void *msg_recv){
 }
 
 void MicroROS::publish_touch() {
-    touch_status.data = mysensor.read();
-    rcl_publish(&touch_pub, &touch_status, NULL);
+    touch_status1.data = mysensor1.read();
+    rcl_publish(&touch_pub1, &touch_status1, NULL);
+
+    touch_status1.data = mysensor1.read();
+    rcl_publish(&touch_pub2, &touch_status2, NULL);
+
+    touch_status1.data = mysensor1.read();
+    rcl_publish(&touch_pub3, &touch_status3, NULL);
+
+    touch_status1.data = mysensor1.read();
+    rcl_publish(&touch_pub4, &touch_status4, NULL);
 }
 
 void MicroROS::start_receiving_msgs(){

@@ -1,17 +1,20 @@
 #include <Arduino.h>
 #include "MicroROS.h"
 
-MicroROS ros_servo ;
+MicroROS orion_micro ;
 
 void setup() {
-    ros_servo.initialize();
+    orion_micro.initialize();
     //ros_servo.servo_subscriber_define();
-    ros_servo.screen_subscriber_define();
-    //ros_servo.touch_publisher_define();
-    ros_servo.executors_start();
+    orion_micro.screen_subscriber_define();
+    orion_micro.touch_publisher_define1();
+    orion_micro.touch_publisher_define2();
+    orion_micro.touch_publisher_define3();
+    orion_micro.touch_publisher_define4();
+    orion_micro.executors_start();
 }
 
 void loop() {
-    ros_servo.start_receiving_msgs();
-    //ros_servo.publish_touch();
+    orion_micro.start_receiving_msgs();
+    orion_micro.publish_touch();
 }
