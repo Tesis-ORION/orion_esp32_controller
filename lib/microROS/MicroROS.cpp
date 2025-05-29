@@ -104,21 +104,9 @@ void MicroROS::screen_status_callback(const void *msg_recv){
     const std_msgs__msg__Int32 * recieved_data = (const std_msgs__msg__Int32 *) msg_recv ;
     int emotion_received = recieved_data->data;
 
-    myscreen.drawHappyFace(80, 100);
     Serial.println(emotion_received);
 
-    if(emotion_received == 0) {
-        myscreen.drawHappyFace(80, 100);
-    }
-    else if(emotion_received == 1){
-        myscreen.drawNeutralFace(80, 100);
-    }
-    else if(emotion_received == 2){
-        myscreen.drawSadFace(80, 100);
-    }
-    else if(emotion_received == 3){
-        myscreen.drawAngryFace(10, 100);
-    }
+    myscreen.drawEmotion(emotion_received);
 }
 
 void MicroROS::publish_touch() {

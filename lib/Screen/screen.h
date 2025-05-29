@@ -4,6 +4,7 @@
 #include <Arduino.h>
 #include <TFT_22_ILI9225.h>
 #include <SPI.h>
+#include "emotions.h"
 
 #define TFT_RST  26
 #define TFT_RS   25
@@ -20,11 +21,7 @@ class Screen{
     public:
         Screen();
         void initialize();
-        void drawFaceBase(int x, int y, uint16_t faceColor);
-        void drawHappyFace(int x, int y);
-        void drawSadFace(int x, int y);
-        void drawAngryFace(int x, int y);
-        void drawNeutralFace(int x, int y);
+        void Screen::drawEmotion(int emotion);
         void drawBitmap(int x, int y, const unsigned char *bitmap, int w, int h, uint16_t color);
 
     private:

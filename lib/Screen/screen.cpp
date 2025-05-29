@@ -15,42 +15,12 @@ void Screen::initialize()
 	tft.setFont(Terminal12x16);
 }
 
-void Screen::drawFaceBase(int x, int y, uint16_t faceColor)
-{
-	tft.fillCircle(x, y, 30 * scale, faceColor);						  // cara principal
-	tft.fillCircle(x - 10 * scale, y - 10 * scale, 3 * scale, COLOR_BLACK); // ojo izquierdo
-	tft.fillCircle(x + 10 * scale, y - 10 * scale, 3 * scale, COLOR_BLACK); // ojo derecho
+void Screen::drawEmotion(int emotion) {
+    tft.clear();
+
+    tft.drawBitmap(0, 0, epd_bitmap_allArray[emotion], 220, 176, COLOR_BLACK);
 }
 
-void Screen::drawHappyFace(int x, int y)
-{
-	drawFaceBase(x, y, COLOR_YELLOW);
-	tft.drawLine(x - 10 * scale, y + 10 * scale, x - 5 * scale, y + 15 * scale, COLOR_BLACK);
-	tft.drawLine(x - 5 * scale, y + 15 * scale, x + 5 * scale, y + 15 * scale, COLOR_BLACK);
-	tft.drawLine(x + 5 * scale, y + 15 * scale, x + 10 * scale, y + 10 * scale, COLOR_BLACK);
-}
-
-void Screen::drawSadFace(int x, int y)
-{
-	drawFaceBase(x, y, COLOR_YELLOW);
-	tft.drawLine(x - 10 * scale, y + 15 * scale, x - 5 * scale, y + 10 * scale, COLOR_BLACK);
-	tft.drawLine(x - 5 * scale, y + 10 * scale, x + 5 * scale, y + 10 * scale, COLOR_BLACK);
-	tft.drawLine(x + 5 * scale, y + 10 * scale, x + 10 * scale, y + 15 * scale, COLOR_BLACK);
-}
-
-void Screen::drawAngryFace(int x, int y)
-{
-	drawFaceBase(x, y, COLOR_YELLOW);
-	tft.drawLine(x - 15 * scale, y - 18 * scale, x - 5 * scale, y - 13 * scale, COLOR_BLACK); // ceja izq
-	tft.drawLine(x + 5 * scale, y - 13 * scale, x + 15 * scale, y - 18 * scale, COLOR_BLACK); // ceja der
-	tft.drawLine(x - 10 * scale, y + 12 * scale, x + 10 * scale, y + 8 * scale, COLOR_BLACK); // boca
-}
-
-void Screen::drawNeutralFace(int x, int y)
-{
-	drawFaceBase(x, y, COLOR_YELLOW);
-	tft.drawLine(x - 10 * scale, y + 12 * scale, x + 10 * scale, y + 12 * scale, COLOR_BLACK);
-}
 
 void Screen::drawBitmap(int x, int y, const unsigned char *bitmap, int w, int h, uint16_t color)
 {

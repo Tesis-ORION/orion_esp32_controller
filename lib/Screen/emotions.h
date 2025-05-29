@@ -1566,7 +1566,7 @@ const unsigned char* epd_bitmap_allArray[5] = {
 	epd_bitmap_Asustado,
 	epd_bitmap_Enojado,
 	epd_bitmap_Feliz,
-	epd_bitmap_Neutral
+	epd_bitmap_Neutral 
 };
 
 
