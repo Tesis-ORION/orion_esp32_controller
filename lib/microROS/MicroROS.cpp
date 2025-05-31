@@ -18,6 +18,7 @@ Servomotor myservomotor;
 Touchsensor mysensor;
 Screen myscreen;
 
+int prev = 0;
 
 MicroROS::MicroROS(){
 }
@@ -28,9 +29,10 @@ void MicroROS::initialize(){
     myservomotor.initialize();
     mysensor.initialize();
     myscreen.initialize();
+    myscreen.drawEmotion(0); 
 
     // Adding Wifi
-    IPAddress agent_ip(192, 168, 238, 198); // change this line to your computer IP
+    IPAddress agent_ip(192, 168, 245, 198); // change this line to your computer IP
     size_t agent_port = 8888; // Don't change this port unless you know what you are doing and you have 8888 port already in use
 
     char ssid[] = "Miguel"; // change this line with your wifi name
@@ -71,7 +73,7 @@ void MicroROS::screen_subscriber_define(){
     &screen_status_sub,
     &node,
     ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Int32),
-    "/emotion");
+    "/emotion/int");
 
     Serial.println("Subscriptor a /emotion definido");
 
@@ -106,7 +108,10 @@ void MicroROS::screen_status_callback(const void *msg_recv){
 
     Serial.println(emotion_received);
 
-    myscreen.drawEmotion(emotion_received);
+    if(prev != emotion_received){
+        myscreen.drawEmotion(emotion_received);
+        prev = emotion_received;
+    }
 }
 
 void MicroROS::publish_touch() {

@@ -1,4 +1,5 @@
 #include "screen.h"
+#include "emotions.h"
 
 SPIClass hspi(HSPI);
 TFT_22_ILI9225 tft = TFT_22_ILI9225(TFT_RST, TFT_RS, TFT_CS, TFT_SDI, TFT_CLK, TFT_LED);
@@ -11,19 +12,20 @@ void Screen::initialize()
 	tft.begin(hspi);
 
 	tft.clear();
-	tft.setBackgroundColor(COLOR_BLACK);
+	tft.setBackgroundColor(COLOR_WHITE);
 	tft.setFont(Terminal12x16);
 }
 
 void Screen::drawEmotion(int emotion) {
     tft.clear();
 
-    tft.drawBitmap(0, 0, epd_bitmap_allArray[emotion], 220, 176, COLOR_BLACK);
+    tft.drawBitmap(0, 0, epd_bitmap_allArray[emotion], 176, 220, 0x5DDF);
 }
 
 
 void Screen::drawBitmap(int x, int y, const unsigned char *bitmap, int w, int h, uint16_t color)
 {
+	tft.clear();
 	for (int j = 0; j < h; j++)
 	{
 		for (int i = 0; i < w; i++)
