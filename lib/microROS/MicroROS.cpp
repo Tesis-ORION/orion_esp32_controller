@@ -18,7 +18,7 @@ Servomotor myservomotor;
 Touchsensor mysensor;
 Screen myscreen;
 
-int prev = 0;
+int prev = 4;
 
 MicroROS::MicroROS(){
 }
@@ -29,7 +29,7 @@ void MicroROS::initialize(){
     myservomotor.initialize();
     mysensor.initialize();
     myscreen.initialize();
-    myscreen.drawEmotion(0); 
+    myscreen.drawEmotion(4); 
 
     // Adding Wifi
     IPAddress agent_ip(192, 168, 245, 198); // change this line to your computer IP
@@ -38,8 +38,8 @@ void MicroROS::initialize(){
     char ssid[] = "Miguel"; // change this line with your wifi name
     char psk[]= "Ruta2005*"; // change this line with your password
 
-    set_microros_wifi_transports(ssid, psk, agent_ip, agent_port);
-    //set_microros_serial_transports(Serial);  // uncomment this line if you want to use serial instead of wifi
+    //set_microros_wifi_transports(ssid, psk, agent_ip, agent_port);
+    set_microros_serial_transports(Serial);  // uncomment this line if you want to use serial instead of wifi
 
     delay(2000);
 

@@ -19,7 +19,7 @@ void Screen::initialize()
 void Screen::drawEmotion(int emotion) {
     tft.clear();
 
-    tft.drawBitmap(0, 0, epd_bitmap_allArray[emotion], 176, 220, 0x5DDF);
+    tft.drawBitmap(0, 0, epd_bitmap_allArray[emotion], 176, 220, emotion_color[emotion]);
 }
 
 
